@@ -9,13 +9,27 @@ var usersRouter = require('./routes/users');
 
 
 //connect to mysql
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'user',
-  password: 'password',
-  database: 'database name'
-});
+var myConnection  = require('express-myconnection');
+
+/**
+ * Store database credentials in a separate config.js file
+ * Load the file/module and its values
+ */ 
+var config = require('./config')
+var dbOptions = {
+    host:        config.database.host,
+    user:        config.database.user,
+    password:    config.database.password,
+    port:        config.database.port, 
+    database:    config.database.db
+}
+/**
+ * 3 strategies can be used
+ * single: Creates single database connection which is never closed.
+ * pool: Creates pool of connections. Connection is auto release when response ends.
+ * request: Creates new connection per new request. Connection is auto close when response ends.
+ */ 
+app.use(myConnection(mysql, dbOptions, 'pool'))
 
 
 var app = express();
